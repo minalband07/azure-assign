@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "databaseNamePrefix": {
+        "value": "wp"
+      },
+      "databaseAdminUsername": {
+        "value": "wp_admin"
+      },
+      "databaseAdminPassword": {
+        "value": "wp@123Awesome"
+      },
+      "SKUTier": {
+        "value": "GeneralPurpose"
+      },
+      "SKUFamily": {
+        "value": "Gen5"
+      },
+      "NumberOfCores": {
+        "value": 2
+      },
+      "databaseVersion": {
+        "value": "5.7"
+      },
+      "storageSizeInMB": {
+        "value": 5120
+      },
+      "backupRetentionDays": {
+        "value": 35
+      },
+      "sslEnforcement": {
+        "value": "Disabled"
+      },
+      "geoRedundantBackup": {
+        "value": "Disabled"
+      },
+      "storageAutoGrow": {
+        "value": "Disabled"
+      }
+    }
+  }

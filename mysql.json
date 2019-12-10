@@ -1,0 +1,134 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "databaseNamePrefix": {
+            "type": "string"
+        },
+        "databaseAdminUsername": {
+            "type": "string"
+        },
+        "databaseAdminPassword": {
+            "type": "securestring"
+        },
+        "SKUTier": {
+            "type": "string",
+            "defaultValue": "GeneralPurpose",
+            "allowedValues": [
+                "GeneralPurpose",
+                "MemoryOptimized"
+            ]
+        },
+        "SKUFamily": {
+            "type": "string",
+            "defaultValue": "Gen5"
+        },
+        "NumberOfCores": {
+            "type": "int",
+            "defaultValue": 2,
+            "allowedValues": [
+                2,
+                4,
+                8,
+                16,
+                32,
+                64
+            ]
+        },
+        "databaseVersion": {
+            "type": "string",
+            "defaultValue": "5.7"
+        },
+        "storageSizeInMB": {
+            "type": "int",
+            "defaultValue": 5120
+        },
+        "backupRetentionDays": {
+            "type": "int",
+            "defaultValue": 35
+        },
+        "sslEnforcement": {
+            "type": "string",
+            "defaultValue": "Disabled",
+            "allowedValues": [
+                "Enabled",
+                "Disabled"
+            ]
+        },
+        "geoRedundantBackup": {
+            "type": "string",
+            "defaultValue": "Disabled",
+            "allowedValues": [
+                "Enabled",
+                "Disabled"
+            ]
+        },
+        "storageAutoGrow": {
+            "type": "string",
+            "defaultValue": "Disabled",
+            "allowedValues": [
+                "Enabled",
+                "Disabled"
+            ]
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "databaseName": "[concat( parameters('databaseNamePrefix'), uniqueString(resourceGroup().id) )]",
+        "databaseForMySqlSku": "[concat(variables('tierSymbol')[parameters('SKUTier')], '_', parameters('SKUFamily'), '_', parameters('NumberOfCores'))]",
+        "tierSymbol": {
+            "GeneralPurpose": "GP",
+            "MemoryOptimized": "MO"
+        }
+    },
+    "resources": [
+        {
+            "name": "[variables('databaseName')]",
+            "type": "Microsoft.DBforMySQL/servers",
+            "apiVersion": "2017-12-01",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "[variables('databaseForMySqlSku')]"
+            },
+            "properties": {
+                "version": "[parameters('databaseVersion')]",
+                "administratorLogin": "[parameters('databaseAdminUsername')]",
+                "administratorLoginPassword": "[parameters('databaseAdminPassword')]",
+                "sslEnforcement": "[parameters('sslEnforcement')]",
+                "storageProfile": {
+                    "backupRetentionDays": "[parameters('backupRetentionDays')]",
+                    "geoRedundantBackup": "[parameters('geoRedundantBackup')]",
+                    "storageMB": "[parameters('storageSizeInMB')]",
+                    "storageAutogrow": "[parameters('storageAutoGrow')]"
+                },
+                "createMode": "default"
+            },
+            "resources": [
+                {
+                    "name": "[variables('databaseName')]",
+                    "type": "databases",
+                    "apiVersion": "2017-12-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.DBforMySQL/servers', variables('databaseName'))]"
+                    ],
+                    "properties": {
+                        "charset": "utf8",
+                        "collation": "utf8_general_ci"
+                    }
+                },
+                {
+                    "type": "Microsoft.DBforMySQL/servers/firewallRules",
+                    "apiVersion": "2017-12-01",
+                    "name": "[concat(variables('databaseName'), '/AllowAllWindowsAzureIps')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.DBforMySQL/servers', variables('databaseName'))]"
+                    ],
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "0.0.0.0"
+                    }
+                }
+            ]
+        }
+    ]
+}

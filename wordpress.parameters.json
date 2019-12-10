@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "webSiteNamePrefix": {
+        "value": "wp"
+      },
+      "appServicePlanName": {
+        "value": "ats3espmovi5ixtu"
+      },
+      "wordpressDockerImage": {
+        "value": "wordpress:php7.3"
+      },
+      "wordpressDbHost": {
+        "value": ""
+      },
+      "wordpressDbName": {
+        "value": ""
+      },
+      "wordpressDbUsername": {
+        "value": ""
+      },
+      "wordpressDbPassword": {
+        "value": ""
+      }
+    }
+  }

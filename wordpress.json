@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "webSiteNamePrefix": {
+            "type": "string"
+        },
+        "appServicePlanName": {
+            "type": "string"
+        },
+        "wordpressDockerImage": {
+            "type": "string"
+        },
+        "wordpressDbHost": {
+            "type": "string"
+        },
+        "wordpressDbName": {
+            "type": "string"
+        },
+        "wordpressDbUsername": {
+            "type": "string"
+        },
+        "wordpressDbPassword": {
+            "type": "secureString"
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "webSiteName": "[concat(parameters('webSiteNamePrefix'),uniqueString(resourceGroup().id))]",
+        "appServicePlanExternalId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Web/serverfarms/',parameters('appServicePlanName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2019-08-01",
+            "name": "[variables('webSiteName')]",
+            "location": "[variables('location')]",
+            "kind": "app,linux,container",
+            "properties": {
+                "enabled": true,
+                "serverFarmId": "[variables('appServicePlanExternalId')]",
+                "siteConfig": {
+                    "linuxFxVersion": "[concat('DOCKER|',parameters('wordpressDockerImage'))]",
+                    "alwaysOn": "true",
+                    "appSettings": [
+                        {
+                          "name": "WORDPRESS_DB_HOST",
+                          "value": "[parameters('wordpressDbHost')]"
+                        },
+                        {
+                            "name": "WORDPRESS_DB_NAME",
+                            "value": "[parameters('wordpressDbName')]"
+                        },
+                        {
+                            "name": "WORDPRESS_DB_USER",
+                            "value": "[parameters('wordpressDbUsername')]"
+                        },
+                        {
+                            "name": "WORDPRESS_DB_PASSWORD",
+                            "value": "[parameters('wordpressDbPassword')]"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

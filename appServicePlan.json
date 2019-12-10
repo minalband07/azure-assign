@@ -1,0 +1,57 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appServicePlanPrefix": {
+            "type": "string"
+        },
+        "appServicePlanSKU": {
+            "type": "string",
+            "defaultValue": "P1v2",
+            "allowedValues": [
+                "P1v2",
+                "P2v2",
+                "P3v2"
+            ]
+        },
+        "appServicePlanTier": {
+            "type": "string",
+            "defaultValue": "PremiumV2"
+        },
+        "appServicePlanFamily": {
+            "type": "string",
+            "defaultValue": "Pv2"
+        },
+        "appServicePlanCapacity": {
+            "type": "int",
+            "defaultValue": 1,
+            "allowedValues": [
+                1,
+                2,
+                3,
+                4
+            ]
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('appServicePlanPrefix'),uniqueString(resourceGroup().id))]",
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2019-08-01",
+            "location": "[variables('location')]",
+            "properties": {
+                "reserved": true
+            },
+            "sku": {
+              "name": "[parameters('appServicePlanSKU')]",
+              "tier": "[parameters('appServicePlanTier')]",
+              "size": "[parameters('appServicePlanSKU')]",
+              "family": "[parameters('appServicePlanFamily')]",
+              "capacity": "[parameters('appServicePlanCapacity')]"
+            }
+          }
+    ]
+}
