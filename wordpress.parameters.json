@@ -6,7 +6,7 @@
         "value": "wp"
       },
       "appServicePlanName": {
-        "value": "ats3espmovi5ixtu"
+        "value": ""
       },
       "wordpressDockerImage": {
         "value": "wordpress:php7.3"
